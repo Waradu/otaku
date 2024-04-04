@@ -3,7 +3,8 @@
     "beforeBuildCommand": "bun generate",
     "beforeDevCommand": "bun nuxt",
     "devPath": "http://localhost:3000",
-    "distDir": "../.output/public"
+    "distDir": "../.output/public",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "otaku",
@@ -65,7 +66,12 @@
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
-        "skipTaskbar": true
+        "skipTaskbar": true,
+        "center": true,
+        "maxHeight": 250,
+        "maxWidth": 250,
+        "minHeight": 250,
+        "minWidth": 250
       }
     ]
   }
