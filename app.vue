@@ -1,11 +1,14 @@
 <template>
   <div>
-    <div data-tauri-drag-region class="main" @click="moveRight" :class="{'dragging': isDragging}"></div>
+    <div data-tauri-drag-region class="main" @click="$controller.increment();console.log($controller.getCounter())" :class="{'dragging': isDragging}">
+      {{ $controller.getCounter() }}
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { appWindow, LogicalPosition } from '@tauri-apps/api/window';
+const { $controller } = useNuxtApp()
 
 const init_pos = await appWindow.innerPosition()
 
@@ -18,11 +21,9 @@ export default {
   },
   async mounted() {
     await appWindow.onMoved(async () => {
-      this.pos = await appWindow.innerPosition();
+      const pos = await appWindow.innerPosition();
+      this.pos = pos;
     });
-
-    document.querySelector(".main").addEventListener('mousedown', this.handleMouseDown);
-    document.addEventListener('mouseup', this.handleMouseUp);
   },
   methods: {
     async move() {
@@ -30,15 +31,8 @@ export default {
     },
     async moveRight() {
       this.pos = await appWindow.innerPosition()
-      this.pos.x += 20
+      this.pos.x += 10
       this.move()
-    },
-    handleMouseDown() {
-      this.isDragging = true;
-    },
-    handleMouseUp() {
-      console.log("tr");
-      this.isDragging = false;
     }
   }
 }
