@@ -1,8 +1,9 @@
+import { createPinia } from 'pinia';
 import { useControllerStore } from '~/store/controller';
 
-const controllerStore = useControllerStore();
-
 export default defineNuxtPlugin((nuxtApp) => {
+  const controllerStore = useControllerStore();
+
   const controller = {
     increment() {
       controllerStore.increment()
