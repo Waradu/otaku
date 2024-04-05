@@ -2,16 +2,9 @@
   <div>
     <div class="details">
       <div class="name">{{ $pet.data.name }}</div>
-      <div class="money">Money: {{ $pet.data.money }}$</div>
-      <div class="energy">Energy: {{ $pet.data.energy }}%</div>
-      <div class="xp">XP: {{ $pet.data.xp }}</div>
-      <div class="mood">Mood: {{ $pet.data.mood }}%</div>
-      <div class="hunger">Hunger: {{ $pet.data.hunger }}%</div>
-      <div class="thirst">Thirst: {{ $pet.data.thirst }}%</div>
-      <div class="thirst">Happy: {{ $pet.data.isHappy }}, Ill: {{ $pet.data.isIll }}, Bad: {{ $pet.data.isInBadCondition
-        }}</div>
-      <div class="current_animation">{{ $pet.current_frame }} | {{ $pet.selectedAnimationVariant + 1 }}</div>
-      <div class="time_passed">{{ $controller.timePassed }}</div>
+      <div class="current_animation">Mood: {{ $pet.data.moodType }}</div>
+      <div class="current_animation">Variant: {{ $pet.selectedAnimationVariant + 1 }}</div>
+      <div class="current_animation">Frame: {{ $pet.current_frame }}</div>
       <div class="path">/pet{{ image }}</div>
     </div>
     <img :src="`/pet${image}`" alt="later">
@@ -61,11 +54,12 @@ body,
   user-select: none;
   overflow: hidden;
   border-radius: 12px;
+  font-size: 14px;
 }
 
 #__nuxt {
   font-family: sans-serif;
-  background-color: rgba($color: #9a0000, $alpha: .5);
+  background-color: rgba($color: #9a0000, $alpha: .6);
   border: 2px solid rgba($color: #d50000, $alpha: .5);
   color: #fff;
   padding: 10px
@@ -85,6 +79,11 @@ body,
   align-items: end;
   justify-content: end;
   gap: 5px;
+  
+  button {
+    padding-inline: 6px;
+    font-size: 12px;
+  }
 }
 
 img {
@@ -95,6 +94,7 @@ img {
   top: 0;
   right: 0;
   transition: .1s;
+  opacity: .5;
 }
 
 html:hover .details {
@@ -107,6 +107,7 @@ html:hover img {
   padding: 0;
   top: 0;
   right: 0;
+  opacity: 1;
 }
 
 html:hover #__nuxt {
