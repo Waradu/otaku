@@ -16,6 +16,9 @@
     </div>
     <img :src="`/pet${image}`" alt="later">
     <div class="main" data-tauri-drag-region>
+      <button @click="$controller.setMoodType('happy')">Happy</button>
+      <button @click="$controller.setMoodType('normal')">Normal</button>
+      <button @click="$controller.setMoodType('ill')">Ill</button>
     </div>
   </div>
 </template>
@@ -71,19 +74,22 @@ body,
 .main {
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: 10;
   position: fixed;
   padding: 10px;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  gap: 5px;
 }
 
 img {
   width: 55%;
   height: 55%;
-  z-index: 100;
   position: fixed;
   padding: 5px;
   top: 0;

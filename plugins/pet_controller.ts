@@ -18,6 +18,7 @@ interface AnimationCollection {
   poorCondition: AnimationVariations | null;
 }
 
+type AnimationFlowType = "start" | "default" | "end";
 interface AnimationFlow {
   name: "idle",
   start: AnimationCollection | null;
@@ -122,12 +123,259 @@ var animations: Animations = {
                 speed: 125,
               },
             ],
-            rarity: 1
+            rarity: .3
           },
         ],
       },
-      happy: null,
-      ill: null,
+      happy: {
+        animations: [
+          {
+            frames: [
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+            ],
+            rarity: 1
+          },
+          {
+            frames: [
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+            ],
+            rarity: 1
+          },
+          {
+            frames: [
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+            ],
+            rarity: .5
+          },
+        ],
+      },
+      ill: {
+        animations: [
+          {
+            frames: [
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 375,
+              },
+            ],
+            rarity: 1
+          },
+          {
+            frames: [
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+            ],
+            rarity: .3
+          }
+        ]
+      },
       poorCondition: null,
     },
     end: null,
@@ -157,6 +405,7 @@ interface Pet {
   fallback_animation: AnimationFlow;
   current_frame: number;
   selectedAnimationVariant: number;
+  animationFlowType: AnimationFlowType;
 }
 
 interface FrameResponse {
@@ -165,17 +414,25 @@ interface FrameResponse {
 }
 
 function selectAnimationVariant(animations: Animation[]): number {
-  const weightedList: Animation[] = [];
-
+  let totalRarity = 0;
   animations.forEach(animation => {
-    const weight = animation.rarity >= 1 ? animation.rarity : 1 / animation.rarity;
-    for (let i = 0; i < weight; i++) {
-      weightedList.push(animation);
+    if (animation.rarity > 0) {
+      totalRarity += animation.rarity;
     }
   });
 
-  const randomIndex = Math.floor(Math.random() * weightedList.length);
-  return animations.indexOf(weightedList[randomIndex]);
+  if (totalRarity === 0) return -1; 
+
+  let randomPoint = Math.random() * totalRarity;
+  for (let i = 0; i < animations.length; i++) {
+    if (animations[i].rarity > 0) {
+      if (randomPoint < animations[i].rarity) {
+        return i;
+      }
+      randomPoint -= animations[i].rarity;
+    }
+  }
+  return -1;
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -196,7 +453,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     current_animation: animations.idle,
     fallback_animation: animations.idle,
     current_frame: 0,
-    selectedAnimationVariant: 0
+    selectedAnimationVariant: 0,
+    animationFlowType: "default",
   });
 
   const controller = {
@@ -204,16 +462,24 @@ export default defineNuxtPlugin((nuxtApp) => {
     setName(name: string) {
       pet.data.name = name;
     },
+    setMoodType(moodType: MoodType) {
+      pet.data.moodType = moodType;
+      pet.current_frame = 0;
+      pet.selectedAnimationVariant = 0;
+    },
     calculateTick() {
       const moodType = pet.data.moodType;
       const currentMoodAnimations = pet.current_animation.default[moodType as keyof AnimationCollection];
 
       if (currentMoodAnimations && currentMoodAnimations.animations.length > 0) {
         pet.current_frame += 1;
-
+      
         if (pet.current_frame >= currentMoodAnimations.animations[pet.selectedAnimationVariant].frames.length) {
           pet.current_frame = 0;
-          pet.selectedAnimationVariant = selectAnimationVariant(currentMoodAnimations.animations);
+          let newVariantIndex = selectAnimationVariant(currentMoodAnimations.animations);
+          if (newVariantIndex !== -1) {
+            pet.selectedAnimationVariant = newVariantIndex;
+          }
         }
       }
       this.timePassed += 1;
@@ -227,7 +493,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         currentMoodAnimations.animations.length > 0
       ) {
         const frameResponse: FrameResponse = {
-          path: "/"+pet.current_animation.name+"/"+pet.data.moodType+"/"+(pet.selectedAnimationVariant+1).toString()+"/"+pet.current_frame.toString().padStart(3, "0")+".png",
+          path: "/"+pet.current_animation.name+"/"+pet.animationFlowType+"/"+pet.data.moodType+"/"+(pet.selectedAnimationVariant+1).toString()+"/"+pet.current_frame.toString().padStart(3, "0")+".png",
           speed: currentMoodAnimations.animations[pet.selectedAnimationVariant].frames[pet.current_frame].speed,
         }
         return frameResponse;
