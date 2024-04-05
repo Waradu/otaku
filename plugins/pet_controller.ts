@@ -4,6 +4,7 @@ interface Frame {
 
 interface Animation {
   frames: Frame[];
+  rarity: number;
 }
 
 interface AnimationVariations {
@@ -63,6 +64,7 @@ var animations: Animations = {
                 speed: 125,
               },
             ],
+            rarity: 1
           },
           {
             frames: [
@@ -91,6 +93,7 @@ var animations: Animations = {
                 speed: 125,
               },
             ],
+            rarity: 1
           },
           {
             frames: [
@@ -119,6 +122,7 @@ var animations: Animations = {
                 speed: 125,
               },
             ],
+            rarity: 1
           },
         ],
       },
@@ -160,6 +164,20 @@ interface FrameResponse {
   speed: number;
 }
 
+function selectAnimationVariant(animations: Animation[]): number {
+  const weightedList: Animation[] = [];
+
+  animations.forEach(animation => {
+    const weight = animation.rarity >= 1 ? animation.rarity : 1 / animation.rarity;
+    for (let i = 0; i < weight; i++) {
+      weightedList.push(animation);
+    }
+  });
+
+  const randomIndex = Math.floor(Math.random() * weightedList.length);
+  return animations.indexOf(weightedList[randomIndex]);
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   const pet: Pet = reactive({
     data: {
@@ -188,28 +206,16 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     calculateTick() {
       const moodType = pet.data.moodType;
+      const currentMoodAnimations = pet.current_animation.default[moodType as keyof AnimationCollection];
 
-      const currentMoodAnimations =
-        pet.current_animation.default[moodType as keyof AnimationCollection];
+      if (currentMoodAnimations && currentMoodAnimations.animations.length > 0) {
+        pet.current_frame += 1;
 
-      if (
-        currentMoodAnimations &&
-        currentMoodAnimations.animations.length > 0
-      ) {
-        pet.current_frame = pet.current_frame + 1;
-
-        if (
-          pet.current_frame >=
-          currentMoodAnimations.animations[pet.selectedAnimationVariant].frames
-            .length
-        ) {
+        if (pet.current_frame >= currentMoodAnimations.animations[pet.selectedAnimationVariant].frames.length) {
           pet.current_frame = 0;
-          pet.selectedAnimationVariant = Math.floor(Math.random() * currentMoodAnimations.animations.length)
+          pet.selectedAnimationVariant = selectAnimationVariant(currentMoodAnimations.animations);
         }
-      } else {
-        
       }
-
       this.timePassed += 1;
     },
     getCurrentFramePath(): FrameResponse {
