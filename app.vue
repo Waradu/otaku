@@ -10,8 +10,10 @@
       <div class="thirst">Thirst: {{ $pet.data.thirst }}%</div>
       <div class="thirst">Happy: {{ $pet.data.isHappy }}, Ill: {{ $pet.data.isIll }}, Bad: {{ $pet.data.isInBadCondition
         }}</div>
-      <div class="current_animation">{{ $pet.current_animation.name }} | {{ $pet.current_frame }}</div>
+      <div class="current_animation">{{ $pet.current_frame }}</div>
       <div class="time_passed">{{ $controller.timePassed }}</div>
+      <div class="path">/pet{{ image }}</div>
+      <img :src="`/pet${image}`" alt="later">
     </div>
     <div class="main" data-tauri-drag-region>
     </div>
@@ -21,12 +23,17 @@
 <script lang="ts" setup>
 const { $controller, $pet } = useNuxtApp()
 
-function tick() {
-  $controller.calculateTick()
+const image = ref('');
 
+function tick() {
+  const data = $controller.getCurrentFramePath()
+  
+  image.value = data.path;
+
+  $controller.calculateTick()
   setTimeout(() => {
     requestAnimationFrame(tick);
-  }, 1000 / $controller.fps);
+  }, data.speed);
 }
 
 tick()

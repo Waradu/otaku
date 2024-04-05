@@ -1,44 +1,144 @@
+interface Frame {
+  speed: number;
+}
+
 interface Animation {
-  name: string;
-  frames: number;
-  variations: string[];
-  hasHappy: boolean;
-  hasIll: boolean;
-  hasBadCondition: boolean;
-  can_be_interrupted: boolean;
+  frames: Frame[];
+}
+
+interface AnimationVariations {
+  animations: Animation[];
+}
+
+interface AnimationCollection {
+  normal: AnimationVariations;
+  happy: AnimationVariations | null;
+  ill: AnimationVariations | null;
+  poorCondition: AnimationVariations | null;
+}
+
+interface AnimationFlow {
+  name: "idle",
+  start: AnimationCollection | null;
+  default: AnimationCollection;
+  end: AnimationCollection | null;
+  canBeInterrupted: boolean;
 }
 
 interface Animations {
-  idle: Animation;
-  walk: Animation;
+  idle: AnimationFlow;
 }
 
 var animations: Animations = {
   idle: {
     name: "idle",
-    frames: 3,
-    variations: [],
-    hasHappy: true,
-    hasIll: true,
-    hasBadCondition: true,
-    can_be_interrupted: true,
-  },
-  walk: {
-    name: "walk",
-    frames: 4,
-    variations: [],
-    hasHappy: true,
-    hasIll: true,
-    hasBadCondition: true,
-    can_be_interrupted: true,
+    start: null,
+    default: {
+      normal: {
+        animations: [
+          {
+            frames: [
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 375,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+            ],
+          },
+          {
+            frames: [
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 375,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+            ],
+          },
+          {
+            frames: [
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 375,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+            ],
+          },
+        ],
+      },
+      happy: null,
+      ill: null,
+      poorCondition: null,
+    },
+    end: null,
+    canBeInterrupted: true,
   },
 };
+
+type MoodType = "normal" | "happy" | "ill" | "poorCondition";
 
 interface Data {
   name: string;
   xp: number;
   money: number;
   mood: number;
+  moodType: MoodType;
   energy: number;
   hunger: number;
   thirst: number;
@@ -49,20 +149,25 @@ interface Data {
 
 interface Pet {
   data: Data;
-  current_animation: Animation;
-  fallback_animation: Animation;
+  current_animation: AnimationFlow;
+  fallback_animation: AnimationFlow;
   current_frame: number;
+  selectedAnimationVariant: number;
+}
+
+interface FrameResponse {
+  path: string;
+  speed: number;
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const fps = 4;
-
   const pet: Pet = reactive({
     data: {
       name: "Joshua",
       xp: 0,
       money: 0,
       mood: 100,
+      moodType: "normal",
       energy: 100,
       hunger: 100,
       thirst: 100,
@@ -73,20 +178,58 @@ export default defineNuxtPlugin((nuxtApp) => {
     current_animation: animations.idle,
     fallback_animation: animations.idle,
     current_frame: 0,
+    selectedAnimationVariant: 0
   });
 
   const controller = {
-    fps: fps,
     timePassed: 0,
     setName(name: string) {
       pet.data.name = name;
     },
     calculateTick() {
-      pet.current_frame = (pet.current_frame + 1) % pet.current_animation.frames;
-      this.timePassed += 1
-      if (this.timePassed % 100 === 0) {
-        pet.data.hunger -= 1;
-        pet.data.thirst -= 2;
+      const moodType = pet.data.moodType;
+
+      const currentMoodAnimations =
+        pet.current_animation.default[moodType as keyof AnimationCollection];
+
+      if (
+        currentMoodAnimations &&
+        currentMoodAnimations.animations.length > 0
+      ) {
+        pet.current_frame = pet.current_frame + 1;
+
+        if (
+          pet.current_frame >=
+          currentMoodAnimations.animations[pet.selectedAnimationVariant].frames
+            .length
+        ) {
+          pet.current_frame = 0;
+          pet.selectedAnimationVariant = Math.floor(Math.random() * currentMoodAnimations.animations.length)
+        }
+      } else {
+        
+      }
+
+      this.timePassed += 1;
+    },
+    getCurrentFramePath(): FrameResponse {
+      const currentMoodAnimations =
+        pet.current_animation.default[pet.data.moodType as keyof AnimationCollection];
+
+      if (
+        currentMoodAnimations &&
+        currentMoodAnimations.animations.length > 0
+      ) {
+        const frameResponse: FrameResponse = {
+          path: "/"+pet.current_animation.name+"/"+pet.data.moodType+"/"+(pet.selectedAnimationVariant+1).toString()+"/"+pet.current_frame.toString().padStart(3, "0")+".png",
+          speed: currentMoodAnimations.animations[pet.selectedAnimationVariant].frames[pet.current_frame].speed,
+        }
+        return frameResponse;
+      } else {
+        return {
+          path: "/notfound.png",
+          speed: 1000
+        };
       }
     }
   };
