@@ -37,27 +37,28 @@ export interface Animations {
 
 export type MoodType = "normal" | "happy" | "ill" | "poorCondition";
 
-export interface Data {
+export interface PetData {
   name: string;
   xp: number;
   money: number;
   mood: number;
-  moodType: MoodType;
   energy: number;
   hunger: number;
   thirst: number;
-  isHappy: boolean;
-  isIll: boolean;
-  isInBadCondition: boolean;
+}
+
+export interface AnimationData {
+  animation: AnimationFlow;
+  frame: number;
+  variant: number;
+  mood: MoodType;
+  flow: AnimationFlowType;
+  queue: QueueItem[];
 }
 
 export interface Pet {
-  data: Data;
-  current_animation: AnimationFlow;
-  fallback_animation: AnimationFlow;
-  current_frame: number;
-  selectedAnimationVariant: number;
-  animationFlowType: AnimationFlowType;
+  petData: PetData;
+  current: AnimationData;
 }
 
 export interface FrameResponse {
@@ -66,6 +67,6 @@ export interface FrameResponse {
 }
 
 export interface QueueItem {
-  animationFlow: AnimationFlow;
-  animationFlowType: AnimationFlowType;
+  flow: AnimationFlow;
+  type: AnimationFlowType;
 }

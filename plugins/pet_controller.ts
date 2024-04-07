@@ -1,168 +1,146 @@
 import { animations } from "~/types/animations";
-import type { Pet, Animation, QueueItem, MoodType, AnimationTypes, AnimationCollection, FrameResponse } from "~/types/controller";
-
-function selectAnimationVariant(animations: Animation[]): number {
-  let totalRarity = 0;
-  animations.forEach((animation) => {
-    if (animation.rarity > 0) {
-      totalRarity += animation.rarity;
-    }
-  });
-
-  if (totalRarity === 0) return -1;
-
-  let randomPoint = Math.random() * totalRarity;
-  for (let i = 0; i < animations.length; i++) {
-    if (animations[i].rarity > 0) {
-      if (randomPoint < animations[i].rarity) {
-        return i;
-      }
-      randomPoint -= animations[i].rarity;
-    }
-  }
-  return -1;
-}
+import type {
+  Pet,
+  Animation,
+  QueueItem,
+  MoodType,
+  AnimationTypes,
+  AnimationCollection,
+  FrameResponse,
+  AnimationFlow,
+  AnimationFlowType,
+  AnimationVariations,
+  Frame,
+} from "~/types/controller";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const pet: Pet = reactive({
-    data: {
+    petData: {
       name: "Joshua",
       xp: 0,
       money: 0,
       mood: 100,
-      moodType: "normal",
       energy: 100,
       hunger: 100,
       thirst: 100,
-      isHappy: true,
-      isIll: false,
-      isInBadCondition: false,
     },
-    current_animation: animations.idle,
-    fallback_animation: animations.idle,
-    current_frame: 0,
-    selectedAnimationVariant: 0,
-    animationFlowType: "default",
+    current: {
+      animation: animations.idle,
+      frame: 0,
+      variant: 0,
+      mood: "normal",
+      flow: "default",
+      queue: [],
+    },
   });
-  var queue: QueueItem[] = [];
 
   const controller = {
-    timePassed: 0,
-    setName(name: string) {
-      pet.data.name = name;
-    },
     setMoodType(moodType: MoodType) {
-      pet.data.moodType = moodType;
-      pet.current_frame = 0;
-      pet.selectedAnimationVariant = 0;
+      pet.current.mood = moodType;
+      pet.current.frame = 0;
+      pet.current.variant = 0;
     },
-    switchAnimation(animation: AnimationTypes, force: boolean = false) {
-      if (pet.current_animation.canBeInterrupted || force) {
-        pet.current_frame = 0;
-        pet.selectedAnimationVariant = 0;
-        pet.current_animation = animations[animation];
-      } else {
-        if (pet.current_animation.end != null) {
-          queue.push({
-            animationFlow: pet.current_animation,
-            animationFlowType: "end",
-          });
-        }
-
-        if (animations[animation].start != null) {
-          queue.push({
-            animationFlow: animations[animation],
-            animationFlowType: "start",
-          });
-        }
-
-        queue.push({
-          animationFlow: animations[animation],
-          animationFlowType: "default",
-        });
-
-        console.log(queue);
-      }
-    },
+    switchAnimation(animation: AnimationTypes, force: boolean = false) {},
     calculateTick() {
-      const moodType = pet.data.moodType;
-      const currentMoodAnimations =
-        pet.current_animation.default[moodType as keyof AnimationCollection];
+      const animationFlow = pet.current.animation;
+      const animationCollection = animationFlow?.[pet.current.flow];
+      const animationMood = animationCollection?.[pet.current.mood];
+      const animationVariant = animationMood?.animations[pet.current.variant];
+      const animationFrame = animationVariant?.frames[pet.current.frame];
 
       if (
-        currentMoodAnimations &&
-        currentMoodAnimations.animations.length > 0
-      ) {
-        pet.current_frame += 1;
+        !animationFlow ||
+        !animationCollection ||
+        !animationMood ||
+        !animationVariant ||
+        !animationFrame
+      )
+        {
+          pet.current.frame = 0;
+          pet.current.variant = 0;
+          pet.current.mood = "normal";
+          pet.current.flow = "default";
+          pet.current.queue = [];
+          pet.current.animation = animations.idle;
+          console.log("animation reset due to error");
+          return;
+        };
 
-        if (
-          pet.current_frame >=
-          currentMoodAnimations.animations[pet.selectedAnimationVariant].frames
-            .length
-        ) {
-          pet.current_frame = 0;
-          if (queue.length == 0) {
-            let newVariantIndex = selectAnimationVariant(
-              currentMoodAnimations.animations
-            );
-            if (newVariantIndex !== -1) {
-              pet.selectedAnimationVariant = newVariantIndex;
-            }
-          } else {
-            pet.selectedAnimationVariant = 0;
-            pet.current_frame = 0;
-            const nextItemInQueue = queue.shift()!;
-            pet.current_animation = nextItemInQueue.animationFlow;
-            pet.animationFlowType = nextItemInQueue.animationFlowType;
-            let newVariantIndex = selectAnimationVariant(
-              currentMoodAnimations.animations
-            );
-            if (newVariantIndex !== -1) {
-              pet.selectedAnimationVariant = newVariantIndex;
-            } else {
-              pet.selectedAnimationVariant = 0;
-            }
-            this.timePassed = 0;
-            return;
-          }
+      pet.current.frame += 1;
+
+      if (pet.current.frame < animationVariant.frames.length) return;
+
+      pet.current.frame = 0;
+
+      if (pet.current.queue.length == 0) {
+        pet.current.variant = 0;
+        let newVariantIndex = this.selectAnimationVariant(
+          animationMood.animations
+        );
+        if (newVariantIndex !== -1) {
+          pet.current.variant = newVariantIndex;
         }
       }
-      this.timePassed += 1;
     },
     getCurrentFramePath(): FrameResponse {
-      const currentMoodAnimations =
-        pet.current_animation.default[
-          pet.data.moodType as keyof AnimationCollection
-        ];
+      const notFoundResponse: FrameResponse = {
+        path: "/notfound.png",
+        speed: 100,
+      };
+
+      const animationFlow = pet.current.animation;
+      const animationCollection = animationFlow?.[pet.current.flow];
+      const animationMood = animationCollection?.[pet.current.mood];
+      const animationVariant = animationMood?.animations[pet.current.variant];
+      const animationFrame = animationVariant?.frames[pet.current.frame];
 
       if (
-        currentMoodAnimations &&
-        currentMoodAnimations.animations.length > 0
-      ) {
-        const frameResponse: FrameResponse = {
-          path:
-            "/" +
-            pet.current_animation.name +
-            "/" +
-            pet.animationFlowType +
-            "/" +
-            pet.data.moodType +
-            "/" +
-            (pet.selectedAnimationVariant + 1).toString() +
-            "/" +
-            pet.current_frame.toString().padStart(3, "0") +
-            ".png",
-          speed:
-            currentMoodAnimations.animations[pet.selectedAnimationVariant]
-              .frames[pet.current_frame].speed,
-        };
-        return frameResponse;
-      } else {
-        return {
-          path: "/notfound.png",
-          speed: 1000,
-        };
+        !animationFlow ||
+        !animationCollection ||
+        !animationMood ||
+        !animationVariant ||
+        !animationFrame
+      )
+        return notFoundResponse;
+
+      const framePath =
+        "/" +
+        pet.current.animation.name +
+        "/" +
+        pet.current.flow +
+        "/" +
+        pet.current.mood +
+        "/" +
+        (pet.current.variant + 1).toString() +
+        "/" +
+        pet.current.frame.toString().padStart(3, "0") +
+        ".png";
+
+      return {
+        path: framePath,
+        speed: animationFrame.speed,
+      } as FrameResponse;
+    },
+    selectAnimationVariant(animations: Animation[]): number {
+      let totalRarity = 0;
+      animations.forEach((animation) => {
+        if (animation.rarity > 0) {
+          totalRarity += animation.rarity;
+        }
+      });
+
+      if (totalRarity === 0) return -1;
+
+      let randomPoint = Math.random() * totalRarity;
+      for (let i = 0; i < animations.length; i++) {
+        if (animations[i].rarity > 0) {
+          if (randomPoint < animations[i].rarity) {
+            return i;
+          }
+          randomPoint -= animations[i].rarity;
+        }
       }
+      return -1;
     },
   };
 

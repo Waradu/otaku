@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="details">
-      <div class="current_animation">Mood: {{ $pet.data.moodType }} | Variant: {{ $pet.selectedAnimationVariant + 1 }}
+      <div class="current_animation">Mood: {{ $pet.current.mood }} | Variant: {{ $pet.current.variant + 1 }}
       </div>
-      <div class="current_animation">Ticks: {{ ticks }} | Frame: {{ $pet.current_frame }}</div>
+      <div class="current_animation">Ticks: {{ ticks }} | Frame: {{ $pet.current.frame }}</div>
       <div class="path">/pet{{ image }}</div>
     </div>
     <img :src="`/pet${image}`" alt="later">
@@ -16,6 +16,7 @@
         <button @click="$controller.setMoodType('happy')">Happy</button>
         <button @click="$controller.setMoodType('normal')">Normal</button>
         <button @click="$controller.setMoodType('ill')">Ill</button>
+        <button @click="$controller.setMoodType('poorCondition')">Poor</button>
       </div>
     </div>
   </div>
@@ -23,35 +24,9 @@
 
 <script lang="ts" setup>
 import { LogicalPosition, WebviewWindow, appWindow } from '@tauri-apps/api/window'
-import { listen } from '@tauri-apps/api/event';
 const { $controller, $pet } = useNuxtApp()
-
+ 
 const image = ref('');
-
-function dev() {
-  const webview = new WebviewWindow('settings', {
-    url: 'settings',
-    fullscreen: false,
-    height: 250,
-    resizable: false,
-    title: "Otaku - Settings",
-    width: 250,
-    decorations: false,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: false,
-    center: false,
-    maxHeight: 250,
-    maxWidth: 250,
-    minHeight: 250,
-    minWidth: 250
-  })
-}
-
-listen('changeMoodType', (event: { payload: { moodType: any } }) => {
-  const { moodType } = event.payload;
-  $controller.setMoodType(moodType);
-});
 
 var ticks = 0;
 var lastLoop = new Date();

@@ -36,6 +36,7 @@ source_dir = input("Enter the path to the source directory: ")
 output_dir = input("Enter the path to the output directory: ")
 
 
-rename_and_copy_files(source_dir+"\\C_happy", output_dir+"\\happy\\1")
+rename_and_copy_files(source_dir, output_dir)
+""" rename_and_copy_files(source_dir+"\\C_happy", output_dir+"\\happy\\1")
 rename_and_copy_files(source_dir+"\\C_Nomal", output_dir+"\\normal\\1")
-rename_and_copy_files(source_dir+"\\C_Ill", output_dir+"\\ill\\1")
+rename_and_copy_files(source_dir+"\\C_Ill", output_dir+"\\ill\\1") """
