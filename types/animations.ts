@@ -507,29 +507,69 @@ export var animations: Animations = {
         animations: [
           {
             frames: [
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 250 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
             ],
             rarity: 1,
           },
@@ -539,27 +579,75 @@ export var animations: Animations = {
         animations: [
           {
             frames: [
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 500 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 250,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
             ],
             rarity: 1,
           },
@@ -577,27 +665,69 @@ export var animations: Animations = {
         animations: [
           {
             frames: [
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 500 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
-              { speed: 125 },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 500,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
+              {
+                speed: 125,
+              },
             ],
             rarity: 1,
           },

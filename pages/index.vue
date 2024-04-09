@@ -9,8 +9,8 @@
     <img :src="`/pet${image}`" alt="later">
     <div class="main" data-tauri-drag-region>
       <div class="animation">
-        <button @click="$controller.switchAnimation('idle')">Idle</button>
-        <button @click="$controller.switchAnimation('raise')">Raise</button>
+        <button @click="switchAnimation('idle')">Idle</button>
+        <button @click="switchAnimation('raise')">Raise</button>
       </div>
       <div class="state">
         <button @click="$controller.setMoodType('happy')">Happy</button>
@@ -24,6 +24,7 @@
 
 <script lang="ts" setup>
 import { LogicalPosition, WebviewWindow, appWindow } from '@tauri-apps/api/window'
+import type { AnimationTypes } from '~/types/controller';
 const { $controller, $pet } = useNuxtApp()
  
 const image = ref('');
@@ -31,6 +32,12 @@ const image = ref('');
 var ticks = 0;
 var lastLoop = new Date();
 var fps = 0;
+
+function switchAnimation(animation: AnimationTypes, force: boolean = false) {
+  $controller.switchAnimation(animation, force)
+  const data = $controller.getCurrentFramePath()
+  image.value = data.path;
+}
 
 function tick() {
   $controller.calculateTick()

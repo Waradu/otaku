@@ -35,12 +35,58 @@ export default defineNuxtPlugin((nuxtApp) => {
   });
 
   const controller = {
+    init() {
+
+    },
     setMoodType(moodType: MoodType) {
       pet.current.mood = moodType;
       pet.current.frame = 0;
       pet.current.variant = 0;
     },
-    switchAnimation(animation: AnimationTypes, force: boolean = false) {},
+    switchAnimation(animation: AnimationTypes, force: boolean = false) {
+      const animationFlow = pet.current.animation;
+      const animationCollection = animationFlow?.[pet.current.flow];
+      const animationMood = animationCollection?.[pet.current.mood];
+      const animationVariant = animationMood?.animations[pet.current.variant];
+      const animationFrame = animationVariant?.frames[pet.current.frame];
+
+      if (
+        !animationFlow ||
+        !animationCollection ||
+        !animationMood ||
+        !animationVariant ||
+        !animationFrame
+      ) {
+        this.resetError();
+        return;
+      }
+
+      if (animationCollection.canBeInterrupted || force) {
+        pet.current.frame = 0;
+        pet.current.variant = 0;
+        pet.current.animation = animations[animation];
+        pet.current.queue = [];
+      } else {
+        if (pet.current.animation.end != null) {
+          pet.current.queue.push({
+            flow: pet.current.animation,
+            type: "end",
+          });
+        }
+
+        if (animations[animation].start != null) {
+          pet.current.queue.push({
+            flow: animations[animation],
+            type: "start",
+          });
+        }
+
+        pet.current.queue.push({
+          flow: animations[animation],
+          type: "default",
+        });
+      }
+    },
     calculateTick() {
       const animationFlow = pet.current.animation;
       const animationCollection = animationFlow?.[pet.current.flow];
@@ -54,17 +100,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         !animationMood ||
         !animationVariant ||
         !animationFrame
-      )
-        {
-          pet.current.frame = 0;
-          pet.current.variant = 0;
-          pet.current.mood = "normal";
-          pet.current.flow = "default";
-          pet.current.queue = [];
-          pet.current.animation = animations.idle;
-          console.log("animation reset due to error");
-          return;
-        };
+      ) {
+        this.resetError();
+        return;
+      }
 
       pet.current.frame += 1;
 
@@ -73,14 +112,57 @@ export default defineNuxtPlugin((nuxtApp) => {
       pet.current.frame = 0;
 
       if (pet.current.queue.length == 0) {
-        pet.current.variant = 0;
         let newVariantIndex = this.selectAnimationVariant(
           animationMood.animations
         );
         if (newVariantIndex !== -1) {
           pet.current.variant = newVariantIndex;
         }
+      } else {
+        pet.current.variant = 0;
+        const nextInQueue = pet.current.queue.shift();
+        if (!nextInQueue) {
+          this.resetError();
+          return;
+        }
+        pet.current.animation = nextInQueue.flow;
+        pet.current.flow = nextInQueue.type;
+
+        const newAnimationFlow = pet.current.animation;
+        const newAnimationCollection = newAnimationFlow?.[pet.current.flow];
+        const newAnimationMood = newAnimationCollection?.[pet.current.mood];
+        const newAnimationVariant =
+          newAnimationMood?.animations[pet.current.variant];
+        const newAnimationFrame =
+          newAnimationVariant?.frames[pet.current.frame];
+
+        if (
+          !newAnimationFlow ||
+          !newAnimationCollection ||
+          !newAnimationMood ||
+          !newAnimationVariant ||
+          !newAnimationFrame
+        ) {
+          this.resetError();
+          return;
+        }
+
+        let newVariantIndex = this.selectAnimationVariant(
+          newAnimationMood.animations
+        );
+        if (newVariantIndex !== -1) {
+          pet.current.variant = newVariantIndex;
+        }
       }
+    },
+    resetError() {
+      pet.current.frame = 0;
+      pet.current.variant = 0;
+      pet.current.mood = "normal";
+      pet.current.flow = "default";
+      pet.current.queue = [];
+      pet.current.animation = animations.idle;
+      console.log("animation reset due to error");
     },
     getCurrentFramePath(): FrameResponse {
       const notFoundResponse: FrameResponse = {
