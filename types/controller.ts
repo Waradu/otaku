@@ -15,14 +15,14 @@ export interface AnimationVariations {
 
 export interface AnimationCollection {
   normal: AnimationVariations;
-  happy: AnimationVariations | null;
-  ill: AnimationVariations | null;
-  poorCondition: AnimationVariations | null;
+  happy: AnimationVariations;
+  ill: AnimationVariations;
+  poorCondition: AnimationVariations;
   canBeInterrupted: boolean;
 }
 
 export type AnimationFlowType = "start" | "default" | "end";
-export type AnimationTypes = "idle" | "raise";
+export type AnimationTypes = "idle" | "raise" | "start";
 export interface AnimationFlow {
   name: AnimationTypes;
   start: AnimationCollection | null;
@@ -33,6 +33,7 @@ export interface AnimationFlow {
 export interface Animations {
   idle: AnimationFlow;
   raise: AnimationFlow;
+  start: AnimationFlow;
 }
 
 export type MoodType = "normal" | "happy" | "ill" | "poorCondition";

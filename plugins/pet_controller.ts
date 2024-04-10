@@ -36,7 +36,18 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const controller = {
     init() {
-
+      pet.current.animation = animations.start;
+      pet.current.mood = "happy"
+      let newVariantIndex = this.selectAnimationVariant(
+        animations.start.default[pet.current.mood].animations
+      );
+      if (newVariantIndex !== -1) {
+        pet.current.variant = newVariantIndex;
+      }
+      pet.current.queue.push({
+        flow: animations.idle,
+        type: "default",
+      })
     },
     setMoodType(moodType: MoodType) {
       pet.current.mood = moodType;
@@ -44,6 +55,14 @@ export default defineNuxtPlugin((nuxtApp) => {
       pet.current.variant = 0;
     },
     switchAnimation(animation: AnimationTypes, force: boolean = false) {
+      if (pet.current.queue.length != 0) {
+        if (pet.current.queue[pet.current.queue.length - 1].flow.name == animation) return;
+
+        // TODO:
+        // get last queue item and check for end animation there and start animation from param of this function
+        return;
+      };
+
       const animationFlow = pet.current.animation;
       const animationCollection = animationFlow?.[pet.current.flow];
       const animationMood = animationCollection?.[pet.current.mood];

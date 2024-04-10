@@ -39,10 +39,12 @@ function switchAnimation(animation: AnimationTypes, force: boolean = false) {
   image.value = data.path;
 }
 
+$controller.init()
+
 function tick() {
-  $controller.calculateTick()
   const data = $controller.getCurrentFramePath()
   image.value = data.path;
+  $controller.calculateTick()
 
   ticks++;
   var thisLoop = new Date();
