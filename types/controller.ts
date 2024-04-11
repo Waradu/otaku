@@ -1,5 +1,3 @@
-import { animations } from "~/types/animations";
-
 export interface Frame {
   speed: number;
 }
@@ -71,3 +69,7 @@ export interface QueueItem {
   flow: AnimationFlow;
   type: AnimationFlowType;
 }
+
+export type EventNames = 'pet-data' | 'set-mood' | 'set-animation' | 'frame-data' | 'reset' | 'set-speed' | 'pause-play'
+export type Switch = { type: AnimationTypes, force: boolean }
+export type EventData = Pet | MoodType | Switch | FrameResponse | {} | number
