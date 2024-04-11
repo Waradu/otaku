@@ -37,7 +37,7 @@ async function dev() {
     decorations: false,
     transparent: true,
     alwaysOnTop: true,
-    skipTaskbar: false,
+    skipTaskbar: true,
     center: false,
     maxHeight: 500,
     maxWidth: 300,

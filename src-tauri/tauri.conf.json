@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "Otaku",
+    "productName": "otaku",
     "version": "0.1.1"
   },
   "tauri": {
@@ -73,6 +73,10 @@
         "minHeight": 250,
         "minWidth": 250
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": false
+    }
   }
 }
