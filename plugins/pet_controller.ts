@@ -37,7 +37,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const controller = {
     init() {
       pet.current.animation = animations.start;
-      pet.current.mood = "happy"
+      pet.current.mood = "happy";
       let newVariantIndex = this.selectAnimationVariant(
         animations.start.default[pet.current.mood].animations
       );
@@ -47,7 +47,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       pet.current.queue.push({
         flow: animations.idle,
         type: "default",
-      })
+      });
+    },
+    reset() {
+      pet.current.animation = animations.idle;
+      pet.current.mood = "normal";
+      pet.current.variant = 0;
+      pet.current.frame = 0;
+      pet.current.queue = [];
+      this.init()
     },
     setMoodType(moodType: MoodType) {
       pet.current.mood = moodType;
@@ -55,19 +63,32 @@ export default defineNuxtPlugin((nuxtApp) => {
       pet.current.variant = 0;
     },
     switchAnimation(animation: AnimationTypes, force: boolean = false) {
-      if (pet.current.queue.length != 0) {
-        if (pet.current.queue[pet.current.queue.length - 1].flow.name == animation) return;
-
-        // TODO:
-        // get last queue item and check for end animation there and start animation from param of this function
+      if (force) {
+        pet.current.frame = 0;
+        pet.current.variant = 0;
+        pet.current.animation = animations[animation];
+        pet.current.queue = [];
         return;
-      };
+      }
 
-      const animationFlow = pet.current.animation;
-      const animationCollection = animationFlow?.[pet.current.flow];
-      const animationMood = animationCollection?.[pet.current.mood];
-      const animationVariant = animationMood?.animations[pet.current.variant];
-      const animationFrame = animationVariant?.frames[pet.current.frame];
+      var animationFlow = pet.current.animation;
+      var animationCollection = animationFlow?.[pet.current.flow];
+      var animationMood = animationCollection?.[pet.current.mood];
+      var animationVariant = animationMood?.animations[pet.current.variant];
+      var animationFrame = animationVariant?.frames[pet.current.frame];
+
+      if (pet.current.queue.length != 0) {
+        if (
+          pet.current.queue[pet.current.queue.length - 1].flow.name == animation
+        ) {
+          var animationFlow =
+            pet.current.queue[pet.current.queue.length - 1].flow;
+          var animationCollection = animationFlow?.[pet.current.flow];
+          var animationMood = animationCollection?.[pet.current.mood];
+          var animationVariant = animationMood?.animations[pet.current.variant];
+          var animationFrame = animationVariant?.frames[pet.current.frame];
+        }
+      }
 
       if (
         !animationFlow ||
@@ -80,7 +101,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         return;
       }
 
-      if (animationCollection.canBeInterrupted || force) {
+      if (animationCollection.canBeInterrupted) {
         pet.current.frame = 0;
         pet.current.variant = 0;
         pet.current.animation = animations[animation];

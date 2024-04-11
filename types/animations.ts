@@ -780,7 +780,7 @@ export var animations: Animations = {
               { speed: 125 },
               { speed: 125 },
               { speed: 125 },
-              { speed: 125 },
+              /* { speed: 125 }, */
             ],
             rarity: 1,
           },
@@ -798,7 +798,7 @@ export var animations: Animations = {
               { speed: 125 },
               { speed: 125 },
             ],
-            rarity: 0.5,
+            rarity: 0,
           },
         ],
       },
