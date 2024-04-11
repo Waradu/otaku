@@ -66,7 +66,7 @@
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
-        "skipTaskbar": false,
+        "skipTaskbar": true,
         "center": false,
         "maxHeight": 250,
         "maxWidth": 250,

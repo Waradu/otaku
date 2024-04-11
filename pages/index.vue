@@ -14,7 +14,7 @@ const { $controller, $pet } = useNuxtApp()
 import { emit, listen } from '@tauri-apps/api/event';
 import type { EventNames, EventData, AnimationTypes, MoodType, Switch } from '~/types/controller'
 
-function send(name: EventNames, data: EventData) {
+function send(name: EventNames, data: EventData = {}) {
   emit(name, data)
 }
 
@@ -49,6 +49,7 @@ async function dev() {
 }
 
 function close() {
+  send('close')
   appWindow.close()
 }
 
@@ -63,8 +64,6 @@ await listen('pause-play' as EventNames, (event: { payload: {} }) => {
 
 await listen('reset' as EventNames, (event: { payload: {} }) => {
   $controller.reset()
-  paused = false;
-  speed = 0;
 })
 
 await listen('set-speed' as EventNames, (event: { payload: number }) => {
@@ -72,7 +71,7 @@ await listen('set-speed' as EventNames, (event: { payload: number }) => {
 })
 
 await listen('set-mood' as EventNames, (event: { payload: MoodType }) => {
-  $pet.current.mood = event.payload
+  $controller.setMoodType(event.payload)
 })
 
 await listen('set-animation' as EventNames, (event: { payload: Switch }) => {
@@ -97,6 +96,7 @@ function tick() {
   }, realspeed);
 }
 
+send('resend')
 tick()
 
 /* onMounted(() => {

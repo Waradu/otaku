@@ -37,7 +37,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const controller = {
     init() {
       pet.current.animation = animations.start;
-      pet.current.mood = "happy";
+      pet.current.mood = "normal";
       let newVariantIndex = this.selectAnimationVariant(
         animations.start.default[pet.current.mood].animations
       );
@@ -48,14 +48,6 @@ export default defineNuxtPlugin((nuxtApp) => {
         flow: animations.idle,
         type: "default",
       });
-    },
-    reset() {
-      pet.current.animation = animations.idle;
-      pet.current.mood = "normal";
-      pet.current.variant = 0;
-      pet.current.frame = 0;
-      pet.current.queue = [];
-      this.init()
     },
     setMoodType(moodType: MoodType) {
       pet.current.mood = moodType;
@@ -97,7 +89,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         !animationVariant ||
         !animationFrame
       ) {
-        this.resetError();
+        this.reset();
         return;
       }
 
@@ -141,7 +133,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         !animationVariant ||
         !animationFrame
       ) {
-        this.resetError();
+        this.reset();
         return;
       }
 
@@ -162,7 +154,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         pet.current.variant = 0;
         const nextInQueue = pet.current.queue.shift();
         if (!nextInQueue) {
-          this.resetError();
+          this.reset();
           return;
         }
         pet.current.animation = nextInQueue.flow;
@@ -183,7 +175,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           !newAnimationVariant ||
           !newAnimationFrame
         ) {
-          this.resetError();
+          this.reset();
           return;
         }
 
@@ -195,13 +187,14 @@ export default defineNuxtPlugin((nuxtApp) => {
         }
       }
     },
-    resetError() {
+    reset() {
       pet.current.frame = 0;
       pet.current.variant = 0;
       pet.current.mood = "normal";
       pet.current.flow = "default";
       pet.current.queue = [];
       pet.current.animation = animations.idle;
+      this.init();
       console.log("animation reset due to error");
     },
     getCurrentFramePath(): FrameResponse {
