@@ -757,7 +757,7 @@ export var animations: Animations = {
               { speed: 125 },
               { speed: 125 },
               { speed: 125 },
-              { speed: 125 },
+              /* { speed: 125 }, */
             ],
             rarity: 1,
           },

@@ -25,10 +25,10 @@
         <button @click="send('set-animation', { type:'raise', force: false } as EventData)">Raise</button>
       </div>
       <div class="state">
-        <button @click="send('set-mood', 'happy')">Happy</button>
-        <button @click="send('set-mood', 'normal')">Normal</button>
-        <button @click="send('set-mood', 'ill')">Ill</button>
-        <button @click="send('set-mood', 'poorCondition')">Poor</button>
+        <button @click="send('set-mood', 'happy');mood='happy'">Happy</button>
+        <button @click="send('set-mood', 'normal');mood='normal'">Normal</button>
+        <button @click="send('set-mood', 'ill');mood='ill'">Ill</button>
+        <button @click="send('set-mood', 'poorCondition');mood='poorCondition'">Poor</button>
       </div>
       <div class="speed">
         Speed:
@@ -43,7 +43,7 @@
 <script lang="ts" setup>
 import { appWindow } from '@tauri-apps/api/window';
 import { emit, listen } from '@tauri-apps/api/event';
-import type { EventNames, EventData, PetData, FrameResponse, Pet } from '~/types/controller'
+import type { EventNames, EventData, PetData, FrameResponse, Pet, MoodType } from '~/types/controller'
 import { animations } from '~/types/animations';
 
 function send(name: EventNames, data: EventData = {}) {
@@ -51,6 +51,7 @@ function send(name: EventNames, data: EventData = {}) {
 }
 
 var speed = ref(0)
+var mood = ref('normal' as MoodType)
 
 var ticks = 0;
 
@@ -86,6 +87,15 @@ await listen('pet-data' as EventNames, (event: { payload: Pet }) => {
 
 await listen('frame-data' as EventNames, (event: { payload: FrameResponse }) => {
   frameData.value = event.payload
+})
+
+await listen('resend' as EventNames, (event: { payload: {} }) => {
+  send('set-speed', speed.value);
+  send('set-mood', mood.value);
+})
+
+await listen('close' as EventNames, (event: { payload: {} }) => {
+  close()
 })
 
 function close() {
