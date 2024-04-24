@@ -11,9 +11,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.5.1",
     "@tauri-apps/api": "^1.5.3",
     "@tauri-apps/cli": "^1.5.11",
     "nuxt": "^3.11.1",
+    "pinia": "^2.1.7",
     "sass": "^1.72.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
