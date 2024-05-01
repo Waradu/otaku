@@ -54,6 +54,7 @@ function close() {
 }
 
 /* $controller.init() */
+$controller.save()
 
 var paused = false;
 var speed: number = 0;
@@ -161,11 +162,11 @@ body,
 
 }
 
-#__nuxt:has(.main) {
+/* #__nuxt:has(.main) {
   font-family: sans-serif;
   background-color: rgba(#9a0000, .2);
   border: 2px solid rgba(#d50000, .1);
   color: #fff;
   padding: 10px
-}
+} */
 </style>

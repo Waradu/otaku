@@ -14,6 +14,8 @@ import type {
 } from "~/types/controller";
 
 export default defineNuxtPlugin((nuxtApp) => {
+  const { $file_manager } = useNuxtApp();
+
   const pet: Pet = reactive({
     petData: {
       name: "Joshua",
@@ -256,6 +258,11 @@ export default defineNuxtPlugin((nuxtApp) => {
         }
       }
       return -1;
+    },
+    save() {
+      setInterval(async () => {
+        await $file_manager.save(pet.petData);
+      }, 60000);
     },
   };
 

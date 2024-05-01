@@ -15,6 +15,10 @@
       "all": false,
       "window": {
         "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["$APPDATA","$APPDATA/**"]
       }
     },
     "bundle": {
