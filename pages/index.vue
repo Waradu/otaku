@@ -1,34 +1,50 @@
 <template>
   <div class="main">
-    <img :src="`/pet${image}`" alt="later">
-    <div class="main" data-tauri-drag-region>
+    <img :src="`/pet${image}`" alt="later" />
+    <div class="actions">
       <button @click="dev">Dev</button>
       <button @click="close">Close</button>
+    </div>
+    <div class="overlay">
+      <div class="head">
+        <div class="jaw"></div>
+      </div>
+      <div class="body" data-tauri-drag-region></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { LogicalPosition, WebviewWindow, appWindow } from '@tauri-apps/api/window'
-const { $controller, $pet } = useNuxtApp()
-import { emit, listen } from '@tauri-apps/api/event';
-import type { EventNames, EventData, AnimationTypes, MoodType, Switch } from '~/types/controller'
+import {
+  LogicalPosition,
+  WebviewWindow,
+  appWindow,
+} from "@tauri-apps/api/window";
+const { $controller, $pet } = useNuxtApp();
+import { emit, listen } from "@tauri-apps/api/event";
+import type {
+  EventNames,
+  EventData,
+  AnimationTypes,
+  MoodType,
+  Switch,
+} from "~/types/controller";
 
 function send(name: EventNames, data: EventData = {}) {
-  emit(name, data)
+  emit(name, data);
 }
 
-const image = ref('');
+const image = ref("");
 
 function switchAnimation(animation: AnimationTypes, force: boolean = false) {
-  $controller.switchAnimation(animation, force)
-  const data = $controller.getCurrentFramePath()
+  $controller.switchAnimation(animation, force);
+  const data = $controller.getCurrentFramePath();
   image.value = data.path;
 }
 
 async function dev() {
-  const wvw = new WebviewWindow('settings', {
-    url: 'settings',
+  const wvw = new WebviewWindow("settings", {
+    url: "settings",
     fullscreen: false,
     height: 500,
     resizable: false,
@@ -42,54 +58,54 @@ async function dev() {
     maxHeight: 500,
     maxWidth: 300,
     minHeight: 500,
-    minWidth: 300
-  })
+    minWidth: 300,
+  });
 
-  wvw.setPosition(await appWindow.innerPosition())
+  wvw.setPosition(await appWindow.innerPosition());
 }
 
 function close() {
-  send('close')
-  appWindow.close()
+  send("close");
+  appWindow.close();
 }
 
 /* $controller.init() */
-$controller.save()
+$controller.save();
 
 var paused = false;
 var speed: number = 0;
 
-await listen('pause-play' as EventNames, (event: { payload: {} }) => {
-  paused = !paused
-})
+await listen("pause-play" as EventNames, (event: { payload: {} }) => {
+  paused = !paused;
+});
 
-await listen('reset' as EventNames, (event: { payload: {} }) => {
-  $controller.reset()
-})
+await listen("reset" as EventNames, (event: { payload: {} }) => {
+  $controller.reset();
+});
 
-await listen('set-speed' as EventNames, (event: { payload: number }) => {
-  speed = event.payload
-})
+await listen("set-speed" as EventNames, (event: { payload: number }) => {
+  speed = event.payload;
+});
 
-await listen('set-mood' as EventNames, (event: { payload: MoodType }) => {
-  $controller.setMoodType(event.payload)
-})
+await listen("set-mood" as EventNames, (event: { payload: MoodType }) => {
+  $controller.setMoodType(event.payload);
+});
 
-await listen('set-animation' as EventNames, (event: { payload: Switch }) => {
-  switchAnimation(event.payload.type, event.payload.force)
-})
+await listen("set-animation" as EventNames, (event: { payload: Switch }) => {
+  switchAnimation(event.payload.type, event.payload.force);
+});
 
 function tick() {
-  const data = $controller.getCurrentFramePath()
+  const data = $controller.getCurrentFramePath();
   image.value = data.path;
-  var realspeed = Number(data.speed) + Number(speed)
+  var realspeed = Number(data.speed) + Number(speed);
 
   if (!paused) {
-    $controller.calculateTick()
-    send('pet-data', $pet)
-    send('frame-data', data)
+    $controller.calculateTick();
+    send("pet-data", $pet);
+    send("frame-data", data);
   } else {
-    realspeed = 1
+    realspeed = 1;
   }
 
   setTimeout(() => {
@@ -97,8 +113,8 @@ function tick() {
   }, realspeed);
 }
 
-send('resend')
-tick()
+send("resend");
+tick();
 
 /* onMounted(() => {
   document.querySelector(".main")?.addEventListener("mousedown", async () => {
@@ -129,11 +145,11 @@ body,
     padding: 0px;
     bottom: 0;
     left: 0;
-    transition: .1s;
+    transition: 0.1s;
     opacity: 1;
   }
 
-  .main {
+  .actions {
     width: 100%;
     height: 100%;
     z-index: 10;
@@ -149,7 +165,7 @@ body,
     flex-direction: column;
     gap: 5px;
 
-    &>* {
+    & > * {
       display: flex;
       gap: 5px;
     }
@@ -160,6 +176,47 @@ body,
     }
   }
 
+  .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11;
+    pointer-events: none;
+
+    * {
+      pointer-events: all;
+    }
+
+    .head {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      translate: -50% 0;
+      width: 80px;
+      height: 80px;
+
+      .jaw {
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+        width: 30px;
+        height: 15px;
+      }
+    }
+
+    .body {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      translate: -50% 0;
+      width: 80px;
+      height: 70px;
+    }
+  }
 }
 
 /* #__nuxt:has(.main) {
