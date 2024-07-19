@@ -15,7 +15,9 @@
 <script lang="ts" setup>
 import {
   LogicalPosition,
+  LogicalSize,
   PhysicalPosition,
+  PhysicalSize,
   WebviewWindow,
   appWindow,
 } from "@tauri-apps/api/window";
@@ -29,14 +31,6 @@ import type {
   Switch,
 } from "~/types/controller";
 
-type MouseEventPayload = {
-  button: string;
-  mouse_position: [number, number];
-  window_position: [number, number];
-};
-
-await appWindow.setPosition(new LogicalPosition(1000, 1000));
-
 function send(name: EventNames, data: EventData = {}) {
   emit(name, data);
 }
@@ -49,41 +43,12 @@ function switchAnimation(animation: AnimationTypes, force: boolean = false) {
   image.value = data.path;
 }
 
-await listen<MouseEventPayload>("down", async (event) => {
-  var x_diff =
-    event.payload.mouse_position[0] - event.payload.window_position[0];
-  var y_diff =
-    event.payload.mouse_position[1] - event.payload.window_position[1];
-
-  console.log(x_diff);
-  console.log(y_diff);
-
-  if (
-    x_diff < 230 &&
-    x_diff > 90 &&
-    y_diff < 250 &&
-    y_diff > 20 &&
-    event.payload.button == "1"
-  ) {
-    const x = event.payload.window_position[0];
-    const y = event.payload.window_position[1];
-
-    const posx = x - 150 + x_diff;
-    const posy = y - 50 + y_diff;
-    /* switchAnimation("raise", true); */
-    const pos = await appWindow.innerPosition();
-    console.log("==============================");
-    console.log(pos.x, pos.y);
-    console.log(x, y);
-    send("move", {
-      x: posx,
-      y: posy,
-    });
-  }
+await listen("down", (event) => {
+  switchAnimation("raise", true);
 });
 
-await listen<MouseEventPayload>("up", (event) => {
-  /* switchAnimation("idle", false); */
+await listen("up", (event) => {
+  switchAnimation("idle", false);
 });
 
 async function dev() {
@@ -171,7 +136,6 @@ tick();
 html,
 body,
 #__nuxt {
-  background-color: transparent;
   width: 100%;
   height: 100%;
   max-width: 250px;
