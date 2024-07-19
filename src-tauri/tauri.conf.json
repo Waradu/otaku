@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeBuildCommand": "npm run generate",
-    "beforeDevCommand": "npm run nuxt",
+    "beforeBuildCommand": "yarn run generate",
+    "beforeDevCommand": "yarn run nuxt",
     "devPath": "http://localhost:3000",
     "distDir": "../.output/public",
     "withGlobalTauri": true
