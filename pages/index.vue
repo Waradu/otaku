@@ -6,10 +6,8 @@
       <button @click="close">Close</button>
     </div>
     <div class="overlay">
-      <div class="head" data-tauri-drag-region>
-        <div class="jaw"></div>
-      </div>
-      <div class="body" data-tauri-drag-region></div>
+      <div class="body"></div>
+      <!-- data-tauri-drag-region -->
     </div>
   </div>
 </template>
@@ -37,6 +35,8 @@ type MouseEventPayload = {
   window_position: [number, number];
 };
 
+await appWindow.setPosition(new LogicalPosition(1000, 1000));
+
 function send(name: EventNames, data: EventData = {}) {
   emit(name, data);
 }
@@ -55,21 +55,30 @@ await listen<MouseEventPayload>("down", async (event) => {
   var y_diff =
     event.payload.mouse_position[1] - event.payload.window_position[1];
 
+  console.log(x_diff);
+  console.log(y_diff);
+
   if (
-    x_diff < 220 &&
-    x_diff > 100 &&
-    y_diff < 200 &&
+    x_diff < 230 &&
+    x_diff > 90 &&
+    y_diff < 250 &&
     y_diff > 20 &&
     event.payload.button == "1"
   ) {
     const x = event.payload.window_position[0];
     const y = event.payload.window_position[1];
 
+    const posx = x - 150 + x_diff;
+    const posy = y - 50 + y_diff;
     /* switchAnimation("raise", true); */
     const pos = await appWindow.innerPosition();
+    console.log("==============================");
     console.log(pos.x, pos.y);
     console.log(x, y);
-    await appWindow.setPosition(new LogicalPosition(x, y));
+    send("move", {
+      x: posx,
+      y: posy,
+    });
   }
 });
 
@@ -248,8 +257,8 @@ body,
       bottom: 80px;
       left: 50%;
       translate: -50% 0;
-      width: 80px;
-      height: 70px;
+      width: 90px;
+      height: 180px;
     }
   }
 }
