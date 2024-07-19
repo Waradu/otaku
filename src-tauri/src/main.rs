@@ -13,6 +13,11 @@ fn main() {
         .setup(|app| {
             let app_handle = app.app_handle().clone();
 
+            let window = app_handle.get_window("main").unwrap();
+            window
+                .set_size(tauri::Size::Physical(tauri::PhysicalSize::new(330, 330)))
+                .unwrap();
+
             window::handle(app_handle);
 
             Ok(())
