@@ -70,6 +70,16 @@ export interface QueueItem {
   type: AnimationFlowType;
 }
 
-export type EventNames = 'pet-data' | 'set-mood' | 'set-animation' | 'frame-data' | 'reset' | 'set-speed' | 'pause-play' | 'resend' | 'close'
-export type Switch = { type: AnimationTypes, force: boolean }
-export type EventData = Pet | MoodType | Switch | FrameResponse | {} | number
+export type EventNames =
+  | "move"
+  | "pet-data"
+  | "set-mood"
+  | "set-animation"
+  | "frame-data"
+  | "reset"
+  | "set-speed"
+  | "pause-play"
+  | "resend"
+  | "close";
+export type Switch = { type: AnimationTypes; force: boolean };
+export type EventData = Pet | MoodType | Switch | FrameResponse | {} | number;
