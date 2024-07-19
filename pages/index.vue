@@ -1,12 +1,12 @@
 <template>
   <div class="main">
-    <img :src="`/pet${image}`" alt="later" />
+    <img :src="`/pet${image}`" alt="pet" />
     <div class="actions">
       <button @click="dev">Dev</button>
       <button @click="close">Close</button>
     </div>
     <div class="overlay">
-      <div class="head">
+      <div class="head" data-tauri-drag-region>
         <div class="jaw"></div>
       </div>
       <div class="body" data-tauri-drag-region></div>
@@ -17,6 +17,7 @@
 <script lang="ts" setup>
 import {
   LogicalPosition,
+  PhysicalPosition,
   WebviewWindow,
   appWindow,
 } from "@tauri-apps/api/window";
@@ -30,6 +31,12 @@ import type {
   Switch,
 } from "~/types/controller";
 
+type MouseEventPayload = {
+  button: string;
+  mouse_position: [number, number];
+  window_position: [number, number];
+};
+
 function send(name: EventNames, data: EventData = {}) {
   emit(name, data);
 }
@@ -41,6 +48,34 @@ function switchAnimation(animation: AnimationTypes, force: boolean = false) {
   const data = $controller.getCurrentFramePath();
   image.value = data.path;
 }
+
+await listen<MouseEventPayload>("down", async (event) => {
+  var x_diff =
+    event.payload.mouse_position[0] - event.payload.window_position[0];
+  var y_diff =
+    event.payload.mouse_position[1] - event.payload.window_position[1];
+
+  if (
+    x_diff < 220 &&
+    x_diff > 100 &&
+    y_diff < 200 &&
+    y_diff > 20 &&
+    event.payload.button == "1"
+  ) {
+    const x = event.payload.window_position[0];
+    const y = event.payload.window_position[1];
+
+    /* switchAnimation("raise", true); */
+    const pos = await appWindow.innerPosition();
+    console.log(pos.x, pos.y);
+    console.log(x, y);
+    await appWindow.setPosition(new LogicalPosition(x, y));
+  }
+});
+
+await listen<MouseEventPayload>("up", (event) => {
+  /* switchAnimation("idle", false); */
+});
 
 async function dev() {
   const wvw = new WebviewWindow("settings", {
