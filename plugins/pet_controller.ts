@@ -62,6 +62,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         pet.current.variant = 0;
         pet.current.animation = animations[animation];
         pet.current.queue = [];
+        pet.current.flow = "default";
         return;
       }
 
@@ -94,6 +95,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         this.reset();
         return;
       }
+
+      if (animationFlow.name == animations.raise.name)
+        pet.current.frame = animationVariant.frames.length - 1;
 
       if (animationCollection.canBeInterrupted) {
         pet.current.frame = 0;
